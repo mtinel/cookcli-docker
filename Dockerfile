@@ -47,7 +47,7 @@ LABEL org.opencontainers.image.title="CookCLI" \
       org.opencontainers.image.documentation="https://github.com/inigochoa/cookcli-docker/blob/main/README.md"
 
 # Install minimal runtime dependencies
-RUN apk add --no-cache ca-certificates curl
+RUN apk add --no-cache ca-certificates curl git
 
 # Create non-root user with specific UID/GID
 RUN addgroup -g 1000 appuser && \
@@ -60,15 +60,18 @@ RUN chown -R appuser:appuser /recipes
 # Copy binary from downloader stage
 COPY --from=downloader --chown=appuser:appuser /tmp/cookcli /usr/local/bin/cook
 
+COPY --chmod=+x entrypoint.sh /
+
 # Switch to non-root user
 USER appuser
 
 # Expose server port
-EXPOSE 9080
+EXPOSE 9080                                     
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:9080/ || exit 1
 
 # Run the server
-ENTRYPOINT ["cook", "server", ".", "--host"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["cook", "server", ".", "--host"]
