@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 set -euo pipefail
 
 : "${BRANCH:=main}"
@@ -9,7 +9,7 @@ git_clone() {
   if [ ! -d "$REPO_DIR/.git" ]; then
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cloning git repository [$GIT_REPO] ..."
     local repo_url="${GIT_REPO}"
-    [ -z "${REPO_TOKEN:-}"] || repo_url=$(echo "$GIT_REPO" | sed -E "s#https://#https://${REPO_TOKEN}@#")
+    [ -z "${REPO_TOKEN:-}" ] || repo_url=$(echo "$GIT_REPO" | sed -E "s#https://#https://${REPO_TOKEN}@#")
     git clone --depth 1 --branch "$BRANCH" "$repo_url" "$REPO_DIR"
   fi
 }
